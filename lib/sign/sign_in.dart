@@ -152,6 +152,14 @@ class SignInState extends State<SignIn> {
                     Navigator.pushReplacementNamed(context, "/home");
                     return;
                   }
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Your email and password is empty"
+                      ),
+                    )
+                  );
                 },
               ),
             ),
@@ -170,7 +178,7 @@ class SignInState extends State<SignIn> {
                     ),
                   ),
         
-                  onPressed: () => loginUser(),
+                  onPressed: () => Navigator.pushReplacementNamed(context, "/home"),
                 )
               ],
             ),
@@ -178,48 +186,5 @@ class SignInState extends State<SignIn> {
         ),
       ),
     );
-  }
-
-  Future<void> loginUser() async {
-    final String url = "http://127.0.0.1:8000/api/sign-in/";
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: { "Content-Type": "application/json" },
-        body: jsonEncode({
-          "email": _emailController.text,
-          "password": _passwordController.text
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data["message"]),
-          )
-        );
-
-        Navigator.pushReplacementNamed(context, "/home");
-      }
-
-      else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error: ${data["message"]}"),
-          )
-        );
-      }
-    }
-
-    catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error server is disconnect"),
-        )
-      );
-    }
   }
 }
