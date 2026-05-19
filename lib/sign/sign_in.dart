@@ -41,79 +41,98 @@ class SignInState extends State<SignIn> {
           ),
 
           SizedBox(height: 40),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: "Email",
-              hintText: "Hint yours e-mail",
-              prefixIcon: Icon(Icons.email_outlined),
-              prefixIconColor: WidgetStateColor.resolveWith((states) {
-                return states.contains(WidgetState.focused) ? Colors.lightBlueAccent : Colors.black54;
-              }),
-
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10)
-              ),
-
-              labelStyle: TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.bold
-              ),
-
-              floatingLabelStyle: TextStyle(
-                color: Colors.lightBlueAccent,
-                fontWeight: FontWeight.w500
-              ),
+          Container(
+            margin: EdgeInsets.symmetric(
+              vertical: 20
             ),
 
-            validator: (value) {
-              return value == null || value.isEmpty ? "Email isn't null" : null;
-            },
-          ),
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    hintText: "Hint yours e-mail",
+                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIconColor: WidgetStateColor.resolveWith((states) {
+                      return states.contains(WidgetState.focused) ? Colors.lightBlueAccent : Colors.black54;
+                    }),
 
-          SizedBox(height: 20),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _isPasswordVisible,
-            decoration: InputDecoration(
-              labelText: "Password",
-              hintText: "Hint your password",
-              prefixIcon: Icon(Icons.lock_outline),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.black54,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)
+                    ),
+
+                    labelStyle: TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.bold
+                    ),
+
+                    floatingLabelStyle: TextStyle(
+                      color: Colors.lightBlueAccent,
+                      fontWeight: FontWeight.w500
+                    ),
+                  ),
+
+                  validator: (value) {
+                    return value == null || value.isEmpty ? "Email isn't null" : null;
+                  },
                 ),
 
-                onPressed: () {
-                  setState(() => _isPasswordVisible = !_isPasswordVisible);
-                },
-              ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _isPasswordVisible,
+                  decoration: InputDecoration(
+                      labelText: "Password",
+                      hintText: "Hint your password",
+                      prefixIcon: Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.black54,
+                        ),
 
-              prefixIconColor: WidgetStateColor.resolveWith((states) {
-                return states.contains(WidgetState.focused) ? Colors.lightBlueAccent : Colors.black54;
-              }),
+                        onPressed: () {
+                          setState(() => _isPasswordVisible = !_isPasswordVisible);
+                        },
+                      ),
 
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10)
-              ),
+                      prefixIconColor: WidgetStateColor.resolveWith((states) {
+                        return states.contains(WidgetState.focused) ? Colors.lightBlueAccent : Colors.black54;
+                      }),
 
-              labelStyle: TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.bold
-              ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)
+                      ),
 
-              floatingLabelStyle: TextStyle(color: Colors.lightBlueAccent)
+                      labelStyle: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold
+                      ),
+
+                      floatingLabelStyle: TextStyle(color: Colors.lightBlueAccent)
+                  ),
+
+                  validator: (value) {
+                    return value == null || value.isEmpty ? "Password isn't null" : null;
+                  },
+                ),
+              ],
             ),
-
-            validator: (value) {
-              return value == null || value.isEmpty ? "Password isn't null" : null;
-            },
           ),
 
           SizedBox(height: 20),
-          Center(),
+          Center(
+            child: ElevatedButton(
+              child: Text(
+                "Sign In",
+              ),
+
+              onPressed: () {
+              },
+            ),
+          ),
         ],
       ),
     );

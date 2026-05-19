@@ -16,6 +16,9 @@ def sign_up(request):
     if request.method == "POST":
         data = json.loads(request.body)
 
+        if AccountSign.objects.filter(email=data['email']).exists():
+            return JsonResponse({"error": "The e-mail is already registered"}, status=400)
+
         hashed_pw = make_password(data["password"])
         user = AccountSign.objects.create(
             username=data["username"],
@@ -25,7 +28,7 @@ def sign_up(request):
 
         return JsonResponse({"message" : "this data is success"}, status=201)
 
-    return JsonResponse({"error" : "this data is fail"}, status=405)
+    return JsonResponse({"error" : "the method must POST"}, status=405)
 
 @csrf_exempt
 def sign_in(request):
@@ -43,4 +46,4 @@ def sign_in(request):
         except AccountSign.DoesNotExist:
             return JsonResponse({"message" : "this data is fail"}, status=404)
 
-    return JsonResponse({"error" : "the data is error"}, status=405)
+    return JsonResponse({"error" : "the method must POST"}, status=405)
