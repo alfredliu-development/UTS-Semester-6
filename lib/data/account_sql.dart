@@ -43,10 +43,33 @@ class AccountSQL {
     final hashedEmail = SecurityHash.hashPassword(email);
     final hashPassword = SecurityHash.hashPassword(password);
 
+    final showEmail = await db.query(
+      "account",
+      where: "email = ?",
+      whereArgs: [hashedEmail]
+    );
+
+    if (showEmail.isNotEmpty) return -1;
+
     return await db.insert("accounts", {
       "username": username,
       "email": hashedEmail,
       "password": hashPassword
     });
+  }
+
+  Future<bool> login(String email, String password) async {
+    final db = await instance.database;
+
+    final hashedEmail = SecurityHash.hashPassword(email);
+    final hashPassword = SecurityHash.hashPassword(password);
+
+    final results = await db.query(
+      "account",
+      where: "email = ? AND password = ?",
+      whereArgs: [hashedEmail, hashPassword]
+    );
+
+    return results.isNotEmpty;
   }
 }
