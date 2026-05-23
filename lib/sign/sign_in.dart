@@ -177,7 +177,7 @@ class SignInState extends State<SignIn> {
                       ),
                     ),
 
-                    onPressed: () => Navigator.pushReplacementNamed(context, "/home"),
+                    onPressed: () => Navigator.pushReplacementNamed(context, "/sign-up"),
                   )
                 ],
               ),
@@ -201,7 +201,7 @@ class SignInState extends State<SignIn> {
         )
       );
 
-      Navigator.pushReplacementNamed(context, "/name");
+      Navigator.pushReplacementNamed(context, "/home");
       return;
     }
 
