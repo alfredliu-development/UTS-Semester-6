@@ -1,27 +1,18 @@
 import 'package:e_commerce_market/page/home_page.dart';
-import 'package:e_commerce_market/sign/sign_in.dart';
-import 'package:e_commerce_market/sign/sign_up.dart';
+import 'package:e_commerce_market/page/sign/sign_in.dart';
+import 'package:e_commerce_market/page/sign/sign_up.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isSign = prefs.getBool("isSignIn") ?? false;
-
-  runApp(MyApp(isSign: isSign));
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  final bool isSign;
-  const MyApp({super.key, required this.isSign});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: isSign ? "/home" : "/sign-in",
+      initialRoute: "/sign-in",
       onGenerateRoute: (settings) {
         Widget widgetName = SignIn();
 
