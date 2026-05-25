@@ -4,7 +4,6 @@ import 'package:e_commerce_market/page/sign/sign_in.dart';
 import 'package:e_commerce_market/page/sign/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path/path.dart';
 
 void main() {
   runApp(

@@ -15,8 +15,8 @@ class AuthCubit extends Cubit<SaveData> {
 
   void loadCredentials() async {
     final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString("save_email") ?? "";
-    final password = prefs.getString("save_password") ?? "";
+    final email = prefs.getString("saved_email") ?? "";
+    final password = prefs.getString("saved_password") ?? "";
 
     emit(SaveData(email: email, password:  password));
   }
