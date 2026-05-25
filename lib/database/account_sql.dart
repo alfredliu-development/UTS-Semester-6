@@ -53,6 +53,14 @@ class AccountSQL {
     final hashedEmail = hashValue(email);
     final hashPassword = hashValue(password);
 
+    final result = await db.query(
+      "account",
+      where: "email = ?",
+      whereArgs: [hashedEmail]
+    );
+
+    if (result.isNotEmpty) return -1;
+
     return await db.insert("account", {
       "username": username,
       "email": hashedEmail,

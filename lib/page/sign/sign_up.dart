@@ -1,5 +1,7 @@
 import 'package:e_commerce_market/database/account_sql.dart';
+import 'package:e_commerce_market/page/sign/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -200,7 +202,7 @@ class SignUpState extends State<StatefulWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Did you have account?"),
+                      Text("Did you have an account?"),
                       SizedBox(width: 20),
                       TextButton(
                         child: Text(
@@ -242,14 +244,22 @@ class SignUpState extends State<StatefulWidget> {
     int result = await AccountSQL.instance.register(username, email, password);
 
     if (result > 0) {
+      context.read<AuthCubit>().saveCredentials(email, password);
+
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Successfully"),
           )
       );
 
-      Navigator.pushReplacementNamed(context, "/name");
+      Navigator.pushReplacementNamed(context, "/sign-in");
       return;
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("The e-mail is already have"),
+      )
+    );
   }
 }

@@ -1,9 +1,19 @@
 import 'package:e_commerce_market/page/home_page.dart';
+import 'package:e_commerce_market/page/sign/auth_cubit.dart';
 import 'package:e_commerce_market/page/sign/sign_in.dart';
 import 'package:e_commerce_market/page/sign/sign_up.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(
+    BlocProvider(
+      create: (context) => AuthCubit()..loadCredentials(),
+      child: MyApp(),
+    )
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
