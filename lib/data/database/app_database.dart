@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -13,13 +16,19 @@ class AppDatabase {
     return _database!;
   }
 
+  /// Hash SHA-256 untuk seed data
+  static String _hash(String value) {
+    final bytes = utf8.encode(value);
+    return sha256.convert(bytes).toString();
+  }
+
   Future<Database> _initDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -27,10 +36,25 @@ class AppDatabase {
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      // Add email column to sales table
       await db.execute(
         "ALTER TABLE sales ADD COLUMN email TEXT NOT NULL DEFAULT ''",
       );
+    }
+    if (oldVersion < 3) {
+      // Re-hash semua password yang masih plain-text (seed data lama)
+      // Hanya berlaku untuk password yang belum di-hash (panjang != 64 karakter SHA-256)
+      final rows = await db.query('sales', columns: ['id', 'password']);
+      for (final row in rows) {
+        final pwd = row['password'] as String;
+        if (pwd.length != 64) {
+          await db.update(
+            'sales',
+            {'password': _hash(pwd)},
+            where: 'id = ?',
+            whereArgs: [row['id']],
+          );
+        }
+      }
     }
   }
 
@@ -99,11 +123,11 @@ class AppDatabase {
   }
 
   Future<void> _seedData(Database db) async {
-    // Seed sales user
+    // Seed sales user — password di-hash SHA-256
     await db.insert('sales', {
       'username': 'sales01',
       'email': 'sales01@example.com',
-      'password': 'sales123',
+      'password': _hash('sales123'),
       'full_name': 'Budi Santoso',
       'role': 'sales',
     });
@@ -111,7 +135,7 @@ class AppDatabase {
     await db.insert('sales', {
       'username': 'sales02',
       'email': 'sales02@example.com',
-      'password': 'sales123',
+      'password': _hash('sales123'),
       'full_name': 'Dewi Rahayu',
       'role': 'sales',
     });

@@ -82,10 +82,17 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.storefront_rounded,
-            size: 42,
-            color: Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset(
+              'assets/image/my_logo.png',
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.storefront_rounded,
+                size: 42,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 18),

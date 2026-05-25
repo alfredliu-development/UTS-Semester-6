@@ -97,10 +97,17 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.storefront_rounded,
-            size: 48,
-            color: Colors.white,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Image.asset(
+              'assets/image/my_logo.png',
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.storefront_rounded,
+                size: 48,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 20),

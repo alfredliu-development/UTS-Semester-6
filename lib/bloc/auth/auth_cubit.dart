@@ -51,14 +51,14 @@ class AuthCubit extends Cubit<AuthState> {
       final sales = await _repository.register(
         username: username.trim(),
         email: email.trim(),
-        password: password,
+        password: password, // repository akan hash ini
         fullName: fullName.trim(),
       );
 
-      // Auto-save credentials to SharedPreferences right after register
+      // Simpan credentials plain-text ke SharedPreferences untuk pre-fill login
       await _saveCredentials(username: sales.username, password: password);
 
-      // Also start a session so the user is logged in immediately
+      // Langsung buat session aktif
       await _saveSession(sales);
 
       emit(
