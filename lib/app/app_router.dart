@@ -3,22 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/cart/cart_cubit.dart';
 import '../bloc/customer/customer_cubit.dart';
-import '../bloc/dashboard/dashboard_cubit.dart';
 import '../bloc/order/order_cubit.dart';
 import '../bloc/product/product_cubit.dart';
 import '../data/models/customer_model.dart';
-import '../pages/auth/login_page.dart';
-import '../pages/auth/register_page.dart';
 import '../pages/cart/cart_page.dart';
 import '../pages/checkout/checkout_page.dart';
 import '../pages/customer/customer_detail_page.dart';
 import '../pages/customer/customer_list_page.dart';
-import '../pages/dashboard/dashboard_page.dart';
 import '../pages/order/order_history_page.dart';
 import '../pages/product/product_list_page.dart';
+import '../pages/auth/register_page.dart';
 
 /// Shared CartCubit instance for the current order session.
-/// Reset when a new order session starts.
+/// Reset setiap kali user mulai memilih produk baru.
 CartCubit? _sessionCartCubit;
 
 CartCubit get sessionCart {
@@ -33,21 +30,14 @@ void resetSessionCart() {
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/login':
-        return _fadeRoute(const LoginPage(), settings);
-
+      // ── Auth ──────────────────────────────────────────────────────────────
+      // Login tidak perlu route — _AuthGate sudah menampilkan LoginPage
+      // saat AuthState bukan AuthSuccess.
+      // Tapi tetap disediakan untuk pushNamed('/login') dari register page.
       case '/register':
         return _fadeRoute(const RegisterPage(), settings);
 
-      case '/dashboard':
-        return _fadeRoute(
-          BlocProvider(
-            create: (_) => DashboardCubit(),
-            child: const DashboardPage(),
-          ),
-          settings,
-        );
-
+      // ── Customer ──────────────────────────────────────────────────────────
       case '/customers':
         return _fadeRoute(
           MultiBlocProvider(
@@ -73,9 +63,9 @@ class AppRouter {
           settings,
         );
 
+      // ── Product & Cart ────────────────────────────────────────────────────
       case '/products':
         final customer = settings.arguments as CustomerModel?;
-        // Start a fresh cart session when entering product selection
         resetSessionCart();
         return _fadeRoute(
           MultiBlocProvider(
@@ -111,6 +101,7 @@ class AppRouter {
           settings,
         );
 
+      // ── Orders ────────────────────────────────────────────────────────────
       case '/orders':
         return _fadeRoute(
           BlocProvider(
@@ -120,8 +111,10 @@ class AppRouter {
           settings,
         );
 
+      // ── Default fallback ──────────────────────────────────────────────────
+      // Tidak perlu redirect ke login — _AuthGate yang menentukan.
       default:
-        return _fadeRoute(const LoginPage(), settings);
+        return _fadeRoute(const SizedBox.shrink(), settings);
     }
   }
 
@@ -129,9 +122,8 @@ class AppRouter {
     return PageRouteBuilder(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(opacity: animation, child: child);
-      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+          FadeTransition(opacity: animation, child: child),
       transitionDuration: const Duration(milliseconds: 250),
     );
   }

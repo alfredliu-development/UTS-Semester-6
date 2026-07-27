@@ -320,11 +320,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       );
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/orders',
-        (route) => route.settings.name == '/dashboard',
-      );
+      Navigator.pushNamedAndRemoveUntil(context, '/orders', (route) => false);
     } else if (state is OrderError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -35,7 +35,10 @@ class SalesOrderApp extends StatelessWidget {
       title: 'Sales Take Order',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
-      home: const _SplashRouter(),
+      // Tidak pakai home — semua dihandle oleh _AuthGate
+      builder: (context, child) => _AuthGate(child: child),
+      // Route awal
+      initialRoute: '/',
       onGenerateRoute: AppRouter.generateRoute,
     );
   }
@@ -87,61 +90,34 @@ class SalesOrderApp extends StatelessWidget {
   }
 }
 
-// ─── Splash / Auth Router ─────────────────────────────────────────────────────
-/// Widget ini menjadi "home" pertama aplikasi.
-/// Ia mendengarkan state AuthCubit dan:
-///   - Saat loading/initial → tampil splash screen
-///   - Saat AuthSuccess / AuthRegisterSuccess → navigasi ke dashboard
-///   - Saat lainnya (belum login) → tampil halaman login
-class _SplashRouter extends StatelessWidget {
-  const _SplashRouter();
+/// _AuthGate — wrapper transparan yang merender child dari MaterialApp,
+/// tapi mengganti `child` dengan widget yang sesuai berdasarkan AuthState.
+/// Dengan cara ini AuthCubit tetap di atas MaterialApp dan bisa diakses
+/// dari mana saja termasuk DashboardPage.
+class _AuthGate extends StatelessWidget {
+  final Widget? child;
+  const _AuthGate({this.child});
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        // ── Splash / Loading ──────────────────────────────────────────────
+        if (state is AuthInitial || state is AuthLoading) {
+          return const _SplashScreen();
+        }
+
+        // ── Sudah login → Dashboard ───────────────────────────────────────
         if (state is AuthSuccess || state is AuthRegisterSuccess) {
-          // Ganti seluruh navigation stack dengan dashboard
-          Navigator.of(context).pushAndRemoveUntil(
-            PageRouteBuilder(
-              pageBuilder: (ctx, _, __) => BlocProvider(
-                create: (_) => DashboardCubit()..loadSummary(),
-                child: const DashboardPage(),
-              ),
-              transitionsBuilder: (ctx, animation, _, child) =>
-                  FadeTransition(opacity: animation, child: child),
-              transitionDuration: const Duration(milliseconds: 300),
-            ),
-            (route) => false, // hapus semua route sebelumnya
-          );
-        } else if (state is AuthLoggedOut) {
-          // Kembali ke login, hapus semua route
-          Navigator.of(context).pushAndRemoveUntil(
-            PageRouteBuilder(
-              pageBuilder: (ctx, _, __) => const LoginPage(),
-              transitionsBuilder: (ctx, animation, _, child) =>
-                  FadeTransition(opacity: animation, child: child),
-              transitionDuration: const Duration(milliseconds: 300),
-            ),
-            (route) => false,
+          return BlocProvider(
+            create: (_) => DashboardCubit()..loadSummary(),
+            child: const DashboardPage(),
           );
         }
+
+        // ── Belum login → Login page ──────────────────────────────────────
+        return const LoginPage();
       },
-      child: BlocBuilder<AuthCubit, AuthState>(
-        builder: (context, state) {
-          // Tampil berdasarkan state saat pertama build
-          if (state is AuthSuccess || state is AuthRegisterSuccess) {
-            return BlocProvider(
-              create: (_) => DashboardCubit()..loadSummary(),
-              child: const DashboardPage(),
-            );
-          }
-          if (state is AuthInitial || state is AuthLoading) {
-            return const _SplashScreen();
-          }
-          return const LoginPage();
-        },
-      ),
     );
   }
 }
