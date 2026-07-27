@@ -2,7 +2,6 @@ class SalesModel {
   final int? id;
   final String username;
   final String email;
-  final String password;
   final String fullName;
   final String role;
 
@@ -10,7 +9,6 @@ class SalesModel {
     this.id,
     required this.username,
     required this.email,
-    required this.password,
     required this.fullName,
     this.role = 'sales',
   });
@@ -20,7 +18,6 @@ class SalesModel {
       'id': id,
       'username': username,
       'email': email,
-      'password': password,
       'full_name': fullName,
       'role': role,
     };
@@ -29,10 +26,9 @@ class SalesModel {
   factory SalesModel.fromMap(Map<String, dynamic> map) {
     return SalesModel(
       id: map['id'] as int?,
-      username: map['username'] as String,
+      username: map['username'] as String? ?? '',
       email: map['email'] as String? ?? '',
-      password: map['password'] as String,
-      fullName: map['full_name'] as String,
+      fullName: map['full_name'] as String? ?? '',
       role: map['role'] as String? ?? 'sales',
     );
   }
@@ -41,7 +37,6 @@ class SalesModel {
     int? id,
     String? username,
     String? email,
-    String? password,
     String? fullName,
     String? role,
   }) {
@@ -49,7 +44,6 @@ class SalesModel {
       id: id ?? this.id,
       username: username ?? this.username,
       email: email ?? this.email,
-      password: password ?? this.password,
       fullName: fullName ?? this.fullName,
       role: role ?? this.role,
     );
