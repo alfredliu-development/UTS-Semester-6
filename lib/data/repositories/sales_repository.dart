@@ -7,15 +7,20 @@ class SalesRepository {
 
   // ─── Login ───────────────────────────────────────────────────────────────
 
-  /// Login dengan username + password (password di-hash SHA-256).
-  /// Melempar [ApiException] jika login gagal.
   Future<SalesModel> login(String username, String password) async {
     final hashed = HashHelper.hash(password);
     final response = await _api.post(
       '/account_uas/login',
       data: {'username': username, 'password': hashed},
     );
-    return SalesModel.fromMap(response.data);
+
+    // Pastikan data adalah Map sebelum parsing
+    final data = response.data;
+    if (data == null) {
+      throw ApiException('Server tidak mengembalikan data', statusCode: 500);
+    }
+    final map = Map<String, dynamic>.from(data as Map);
+    return SalesModel.fromMap(map);
   }
 
   // ─── Get by ID ────────────────────────────────────────────────────────────
@@ -24,15 +29,17 @@ class SalesRepository {
     try {
       final response = await _api.get('/account_uas/$id');
       if (response.data == null) return null;
-      return SalesModel.fromMap(response.data);
+      final map = Map<String, dynamic>.from(response.data as Map);
+      return SalesModel.fromMap(map);
     } on ApiException {
+      return null;
+    } catch (_) {
       return null;
     }
   }
 
   // ─── Register ─────────────────────────────────────────────────────────────
 
-  /// Melempar [ApiException] jika username / email sudah digunakan.
   Future<SalesModel> register({
     required String username,
     required String email,
@@ -50,12 +57,12 @@ class SalesRepository {
         'role': 'sales',
       },
     );
-    return SalesModel.fromMap(response.data);
+    final map = Map<String, dynamic>.from(response.data as Map);
+    return SalesModel.fromMap(map);
   }
 
   // ─── Update Account ───────────────────────────────────────────────────────
 
-  /// Melempar [ApiException] jika username sudah dipakai akun lain.
   Future<void> updateAccount({
     required int id,
     required String fullName,

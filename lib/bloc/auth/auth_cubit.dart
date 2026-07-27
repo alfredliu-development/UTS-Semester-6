@@ -30,8 +30,10 @@ class AuthCubit extends Cubit<AuthState> {
     } on ApiException catch (e) {
       // 401 = credentials salah, lainnya = error koneksi/server
       emit(AuthFailure(e.message));
-    } catch (_) {
-      emit(AuthFailure('Terjadi kesalahan. Silakan coba lagi.'));
+    } catch (e, stackTrace) {
+      // ignore: avoid_print
+      print('[AUTH ERROR] $e\n$stackTrace');
+      emit(AuthFailure('Terjadi kesalahan: $e'));
     }
   }
 
@@ -119,7 +121,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> _saveSession(SalesModel sales) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('sales_id', sales.id!);
+    // Hanya simpan jika id tidak null
+    if (sales.id != null) {
+      await prefs.setInt('sales_id', sales.id!);
+    }
   }
 
   Future<void> _saveCredentials({
