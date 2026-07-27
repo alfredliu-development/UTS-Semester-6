@@ -27,13 +27,22 @@ class CustomerModel {
   }
 
   factory CustomerModel.fromMap(Map<String, dynamic> map) {
+    // is_visited bisa bool (dari Django) atau int (dari SQLite lama)
+    final visited = map['is_visited'];
+    bool isVisited = false;
+    if (visited is bool) {
+      isVisited = visited;
+    } else if (visited is int) {
+      isVisited = visited == 1;
+    }
+
     return CustomerModel(
       id: map['id'] as int?,
-      name: map['name'] as String,
-      address: map['address'] as String,
-      phone: map['phone'] as String,
-      isVisited: (map['is_visited'] as int? ?? 0) == 1,
-      notes: map['notes'] as String?,
+      name: map['name']?.toString() ?? '',
+      address: map['address']?.toString() ?? '',
+      phone: map['phone']?.toString() ?? '',
+      isVisited: isVisited,
+      notes: map['notes']?.toString(),
     );
   }
 

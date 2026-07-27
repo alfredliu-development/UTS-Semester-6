@@ -69,14 +69,16 @@ class OrderModel {
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(
       id: map['id'] as int?,
-      customerId: map['customer_id'] as int,
-      customerName: map['customer_name'] as String,
-      totalAmount: (map['total_amount'] as num).toDouble(),
+      customerId: (map['customer_id'] as num?)?.toInt() ?? 0,
+      customerName: map['customer_name']?.toString() ?? '',
+      totalAmount: (map['total_amount'] as num?)?.toDouble() ?? 0.0,
       status: OrderStatusExtension.fromString(
-        map['status'] as String? ?? 'draft',
+        map['status']?.toString() ?? 'draft',
       ),
-      notes: map['notes'] as String?,
-      createdAt: DateTime.parse(map['created_at'] as String),
+      notes: map['notes']?.toString(),
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'].toString())
+          : DateTime.now(),
     );
   }
 
