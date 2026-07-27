@@ -13,7 +13,6 @@ import 'pages/dashboard/dashboard_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Force portrait orientation for mobile
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -34,7 +33,7 @@ class SalesOrderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sales Take Order',
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
       home: const _SplashRouter(),
       onGenerateRoute: AppRouter.generateRoute,
@@ -69,7 +68,6 @@ class SalesOrderApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         ),
       ),
@@ -89,31 +87,66 @@ class SalesOrderApp extends StatelessWidget {
   }
 }
 
-/// Handles initial routing based on auth session
+// ─── Splash / Auth Router ─────────────────────────────────────────────────────
+/// Widget ini menjadi "home" pertama aplikasi.
+/// Ia mendengarkan state AuthCubit dan:
+///   - Saat loading/initial → tampil splash screen
+///   - Saat AuthSuccess / AuthRegisterSuccess → navigasi ke dashboard
+///   - Saat lainnya (belum login) → tampil halaman login
 class _SplashRouter extends StatelessWidget {
   const _SplashRouter();
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthInitial || state is AuthLoading) {
-          return const _SplashScreen();
-        }
-
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
         if (state is AuthSuccess || state is AuthRegisterSuccess) {
-          return BlocProvider(
-            create: (_) => DashboardCubit(),
-            child: const DashboardPage(),
+          // Ganti seluruh navigation stack dengan dashboard
+          Navigator.of(context).pushAndRemoveUntil(
+            PageRouteBuilder(
+              pageBuilder: (ctx, _, __) => BlocProvider(
+                create: (_) => DashboardCubit()..loadSummary(),
+                child: const DashboardPage(),
+              ),
+              transitionsBuilder: (ctx, animation, _, child) =>
+                  FadeTransition(opacity: animation, child: child),
+              transitionDuration: const Duration(milliseconds: 300),
+            ),
+            (route) => false, // hapus semua route sebelumnya
+          );
+        } else if (state is AuthLoggedOut) {
+          // Kembali ke login, hapus semua route
+          Navigator.of(context).pushAndRemoveUntil(
+            PageRouteBuilder(
+              pageBuilder: (ctx, _, __) => const LoginPage(),
+              transitionsBuilder: (ctx, animation, _, child) =>
+                  FadeTransition(opacity: animation, child: child),
+              transitionDuration: const Duration(milliseconds: 300),
+            ),
+            (route) => false,
           );
         }
-
-        return const LoginPage();
       },
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          // Tampil berdasarkan state saat pertama build
+          if (state is AuthSuccess || state is AuthRegisterSuccess) {
+            return BlocProvider(
+              create: (_) => DashboardCubit()..loadSummary(),
+              child: const DashboardPage(),
+            );
+          }
+          if (state is AuthInitial || state is AuthLoading) {
+            return const _SplashScreen();
+          }
+          return const LoginPage();
+        },
+      ),
     );
   }
 }
 
+// ─── Splash Screen ────────────────────────────────────────────────────────────
 class _SplashScreen extends StatelessWidget {
   const _SplashScreen();
 

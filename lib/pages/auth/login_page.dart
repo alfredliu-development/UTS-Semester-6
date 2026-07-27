@@ -276,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(width: 8),
           const Expanded(
             child: Text(
-              'Demo: username sales01 / password sales123',
+              'Demo: username Shizuku / password shizuku-chan',
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ),
