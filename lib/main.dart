@@ -35,8 +35,6 @@ class SalesOrderApp extends StatelessWidget {
       title: 'Sales Take Order',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
-      // _RootPage adalah widget pertama yang ditampilkan.
-      // Ia mengamati AuthState dan menampilkan halaman yang sesuai.
       home: const _RootPage(),
       onGenerateRoute: AppRouter.generateRoute,
     );
@@ -89,44 +87,65 @@ class SalesOrderApp extends StatelessWidget {
   }
 }
 
-/// _RootPage — halaman root yang menentukan tampilan berdasarkan AuthState.
-///
-/// Cara kerja:
-///   AuthInitial / AuthLoading  → SplashScreen
-///   AuthSuccess / AuthRegisterSuccess → DashboardPage (dibungkus DashboardCubit)
-///   Lainnya (belum login)      → LoginPage
-///
-/// Karena ini StatelessWidget yang dibungkus BlocBuilder, setiap kali
-/// AuthCubit emit state baru, widget ini rebuild otomatis dan tampil
-/// halaman yang benar — tanpa perlu Navigator.push sama sekali.
-class _RootPage extends StatelessWidget {
+// ─── Root Page ────────────────────────────────────────────────────────────────
+/// StatefulWidget agar DashboardCubit tidak di-recreate setiap rebuild.
+class _RootPage extends StatefulWidget {
   const _RootPage();
 
   @override
+  State<_RootPage> createState() => _RootPageState();
+}
+
+class _RootPageState extends State<_RootPage> {
+  // DashboardCubit disimpan di state agar tidak di-recreate saat BlocBuilder rebuild
+  late final DashboardCubit _dashboardCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _dashboardCubit = DashboardCubit();
+  }
+
+  @override
+  void dispose() {
+    _dashboardCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
+      // listenWhen dan buildWhen memastikan kita hanya rebuild saat perlu
+      listenWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
+      buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
+      listener: (context, state) {
+        // Saat berhasil login, load dashboard data
+        if (state is AuthSuccess || state is AuthRegisterSuccess) {
+          _dashboardCubit.loadSummary();
+        }
+      },
       builder: (context, state) {
-        // ── Splash loading ────────────────────────────────────────────────
+        // ── Splash ─────────────────────────────────────────────────────
         if (state is AuthInitial || state is AuthLoading) {
           return const _SplashScreen();
         }
 
-        // ── Login berhasil → langsung ke Dashboard ────────────────────────
+        // ── Login berhasil → Dashboard ──────────────────────────────────
         if (state is AuthSuccess || state is AuthRegisterSuccess) {
-          return BlocProvider(
-            create: (_) => DashboardCubit()..loadSummary(),
+          return BlocProvider.value(
+            value: _dashboardCubit,
             child: const DashboardPage(),
           );
         }
 
-        // ── Belum login / logout → LoginPage ─────────────────────────────
+        // ── Belum login / Logout → Login ────────────────────────────────
         return const LoginPage();
       },
     );
   }
 }
 
-/// Splash screen saat app pertama kali buka dan cek session.
+// ─── Splash Screen ────────────────────────────────────────────────────────────
 class _SplashScreen extends StatelessWidget {
   const _SplashScreen();
 
