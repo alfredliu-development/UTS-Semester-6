@@ -12,6 +12,21 @@
 .swiftpm/
 migrate_working_dir/
 
+# Kiro artifacts
+.artifacts/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+backend/__pycache__/
+backend/api/__pycache__/
+backend/config/__pycache__/
+backend/api/migrations/__pycache__/
+*.sqlite3
+
 # IntelliJ related
 *.iml
 *.ipr

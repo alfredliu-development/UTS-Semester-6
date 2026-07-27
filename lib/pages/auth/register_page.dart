@@ -87,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Image.asset(
               'assets/image/my_logo.png',
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.storefront_rounded,
                 size: 42,
                 color: Colors.white,

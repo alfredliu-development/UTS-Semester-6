@@ -11,6 +11,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../data/models/sales_model.dart';
+import '../../data/api/api_service.dart';
 import '../../data/repositories/order_repository.dart';
 import '../../data/repositories/sales_repository.dart';
 import '../../widgets/app_button.dart';
@@ -134,7 +135,8 @@ class _AccountPageState extends State<AccountPage> {
                             ? Image.file(
                                 File(_photoPath!),
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _defaultAvatar(),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    _defaultAvatar(),
                               )
                             : _defaultAvatar(),
                       ),
@@ -665,7 +667,7 @@ class _EditAccountSheetState extends State<_EditAccountSheet> {
           ),
         ),
       );
-    } on RegisterException catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,53 +1,63 @@
-import '../database/app_database.dart';
+import '../api/api_service.dart';
 import '../models/customer_model.dart';
 
 class CustomerRepository {
-  final AppDatabase _db = AppDatabase.instance;
+  final ApiService _api = ApiService.instance;
 
   Future<List<CustomerModel>> getAll() async {
-    final db = await _db.database;
-    final result = await db.query('customers', orderBy: 'name ASC');
-    return result.map((e) => CustomerModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get('/customers');
+      final List data = response.data as List;
+      return data
+          .map((e) => CustomerModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<List<CustomerModel>> search(String query) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'customers',
-      where: 'name LIKE ? OR address LIKE ? OR phone LIKE ?',
-      whereArgs: ['%$query%', '%$query%', '%$query%'],
-      orderBy: 'name ASC',
-    );
-    return result.map((e) => CustomerModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get(
+        '/customers/search',
+        queryParameters: {'q': query},
+      );
+      final List data = response.data as List;
+      return data
+          .map((e) => CustomerModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<CustomerModel?> getById(int id) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'customers',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (result.isEmpty) return null;
-    return CustomerModel.fromMap(result.first);
+    try {
+      final response = await _api.get('/customers/$id');
+      if (response.data == null) return null;
+      return CustomerModel.fromMap(response.data as Map<String, dynamic>);
+    } on ApiException {
+      return null;
+    }
   }
 
-  Future<int> updateVisitStatus(int id, bool isVisited) async {
-    final db = await _db.database;
-    return await db.update(
-      'customers',
-      {'is_visited': isVisited ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+  Future<void> updateVisitStatus(int id, bool isVisited) async {
+    try {
+      await _api.put(
+        '/customers/$id/visit',
+        data: {'is_visited': isVisited ? 1 : 0},
+      );
+    } on ApiException {
+      // Gagal silent — caller bisa cek via getById jika perlu konfirmasi
+    }
   }
 
   Future<int> getTotalVisited() async {
-    final db = await _db.database;
-    final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM customers WHERE is_visited = 1',
-    );
-    return result.first['count'] as int? ?? 0;
+    try {
+      final response = await _api.get('/customers/stats/total-visited');
+      return (response.data['count'] as int?) ?? 0;
+    } on ApiException {
+      return 0;
+    }
   }
 }

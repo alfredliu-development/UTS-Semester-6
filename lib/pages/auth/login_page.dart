@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Image.asset(
               'assets/image/my_logo.png',
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.storefront_rounded,
                 size: 48,
                 color: Colors.white,

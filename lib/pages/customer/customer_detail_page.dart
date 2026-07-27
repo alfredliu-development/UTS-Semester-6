@@ -91,7 +91,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 3),
           ),
@@ -106,7 +106,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
@@ -129,8 +129,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                       ),
                       decoration: BoxDecoration(
                         color: customer.isVisited
-                            ? AppColors.success.withOpacity(0.1)
-                            : AppColors.textSecondary.withOpacity(0.1),
+                            ? AppColors.success.withValues(alpha: 0.1)
+                            : AppColors.textSecondary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -271,7 +271,7 @@ class _OrderHistoryItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

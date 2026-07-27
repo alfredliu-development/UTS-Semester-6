@@ -7,7 +7,6 @@ import 'bloc/auth/auth_cubit.dart';
 import 'bloc/auth/auth_state.dart';
 import 'bloc/dashboard/dashboard_cubit.dart';
 import 'core/constants/app_colors.dart';
-import 'data/database/app_database.dart';
 import 'pages/auth/login_page.dart';
 import 'pages/dashboard/dashboard_page.dart';
 
@@ -19,9 +18,6 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  // Initialize database
-  await AppDatabase.instance.database;
 
   runApp(
     BlocProvider(
@@ -38,7 +34,7 @@ class SalesOrderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sales Take Order',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: _buildTheme(),
       home: const _SplashRouter(),
       onGenerateRoute: AppRouter.generateRoute,

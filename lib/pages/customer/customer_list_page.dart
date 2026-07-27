@@ -71,7 +71,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
                 )
               : null,
           filled: true,
-          fillColor: Colors.white.withOpacity(0.15),
+          fillColor: Colors.white.withValues(alpha: 0.15),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -113,7 +113,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.customers.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return _CustomerCard(customer: state.customers[index]);
               },
@@ -147,7 +147,7 @@ class _CustomerCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -159,7 +159,7 @@ class _CustomerCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -230,9 +230,9 @@ class _VisitBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

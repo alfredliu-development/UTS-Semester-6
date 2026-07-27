@@ -135,7 +135,7 @@ class _ProductListPageState extends State<ProductListPage> {
                     )
                   : null,
               filled: true,
-              fillColor: Colors.white.withOpacity(0.15),
+              fillColor: Colors.white.withValues(alpha: 0.15),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -159,7 +159,7 @@ class _ProductListPageState extends State<ProductListPage> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: _categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  separatorBuilder: (_, index) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final cat = _categories[index];
                     final isSelected = cat == selected;
@@ -175,7 +175,7 @@ class _ProductListPageState extends State<ProductListPage> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? Colors.white
-                              : Colors.white.withOpacity(0.15),
+                              : Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -225,7 +225,7 @@ class _ProductListPageState extends State<ProductListPage> {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.products.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return _ProductCard(
                   product: state.products[index],
@@ -261,11 +261,11 @@ class _ProductCard extends StatelessWidget {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: inCart
-                ? Border.all(color: AppColors.primary.withOpacity(0.4))
+                ? Border.all(color: AppColors.primary.withValues(alpha: 0.4))
                 : null,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -277,7 +277,7 @@ class _ProductCard extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -341,7 +341,7 @@ class _StockBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -393,7 +393,7 @@ class _QuantityControl extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.1),
+              color: AppColors.error.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(
@@ -412,7 +412,7 @@ class _QuantityControl extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(

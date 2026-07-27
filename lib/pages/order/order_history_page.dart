@@ -63,7 +63,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: filters.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          separatorBuilder: (_, index) => const SizedBox(width: 8),
           itemBuilder: (context, index) {
             final (status, label) = filters[index];
             final isSelected = _filterStatus == status;
@@ -78,7 +78,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? Colors.white
-                      : Colors.white.withOpacity(0.15),
+                      : Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -126,7 +126,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: filtered.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return _OrderCard(order: filtered[index]);
               },
@@ -156,7 +156,11 @@ class _OrderCard extends StatelessWidget {
             child: OrderDetailPage(orderId: order.id!),
           ),
         ),
-      ).then((_) => context.read<OrderCubit>().loadOrders()),
+      ).then((_) {
+        if (context.mounted) {
+          context.read<OrderCubit>().loadOrders();
+        }
+      }),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -164,7 +168,7 @@ class _OrderCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

@@ -1,50 +1,68 @@
-import '../database/app_database.dart';
+import '../api/api_service.dart';
 import '../models/product_model.dart';
 
 class ProductRepository {
-  final AppDatabase _db = AppDatabase.instance;
+  final ApiService _api = ApiService.instance;
 
   Future<List<ProductModel>> getAll() async {
-    final db = await _db.database;
-    final result = await db.query('products', orderBy: 'name ASC');
-    return result.map((e) => ProductModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get('/products');
+      final List data = response.data as List;
+      return data
+          .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<List<ProductModel>> search(String query) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'products',
-      where: 'name LIKE ? OR category LIKE ?',
-      whereArgs: ['%$query%', '%$query%'],
-      orderBy: 'name ASC',
-    );
-    return result.map((e) => ProductModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get(
+        '/products/search',
+        queryParameters: {'q': query},
+      );
+      final List data = response.data as List;
+      return data
+          .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<List<ProductModel>> getByCategory(String category) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'products',
-      where: 'category = ?',
-      whereArgs: [category],
-      orderBy: 'name ASC',
-    );
-    return result.map((e) => ProductModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get(
+        '/products',
+        queryParameters: {'category': category},
+      );
+      final List data = response.data as List;
+      return data
+          .map((e) => ProductModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<ProductModel?> getById(int id) async {
-    final db = await _db.database;
-    final result = await db.query('products', where: 'id = ?', whereArgs: [id]);
-
-    if (result.isEmpty) return null;
-    return ProductModel.fromMap(result.first);
+    try {
+      final response = await _api.get('/products/$id');
+      if (response.data == null) return null;
+      return ProductModel.fromMap(response.data as Map<String, dynamic>);
+    } on ApiException {
+      return null;
+    }
   }
 
   Future<List<String>> getCategories() async {
-    final db = await _db.database;
-    final result = await db.rawQuery(
-      'SELECT DISTINCT category FROM products ORDER BY category ASC',
-    );
-    return result.map((e) => e['category'] as String).toList();
+    try {
+      final response = await _api.get('/products/categories');
+      final List data = response.data as List;
+      return data.map((e) => e.toString()).toList();
+    } on ApiException {
+      return [];
+    }
   }
 }

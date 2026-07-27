@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/api/api_service.dart';
 import '../../data/models/sales_model.dart';
 import '../../data/repositories/sales_repository.dart';
 import 'auth_state.dart';
@@ -24,14 +25,11 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       final sales = await _repository.login(username.trim(), password.trim());
-
-      if (sales == null) {
-        emit(AuthFailure('Username atau password salah'));
-        return;
-      }
-
       await _saveSession(sales);
       emit(AuthSuccess(sales));
+    } on ApiException catch (e) {
+      // 401 = credentials salah, lainnya = error koneksi/server
+      emit(AuthFailure(e.message));
     } catch (_) {
       emit(AuthFailure('Terjadi kesalahan. Silakan coba lagi.'));
     }
@@ -68,7 +66,8 @@ class AuthCubit extends Cubit<AuthState> {
           savedPassword: password,
         ),
       );
-    } on RegisterException catch (e) {
+    } on ApiException catch (e) {
+      // 409 = username/email duplikat, pesan langsung dari server
       emit(AuthFailure(e.message));
     } catch (_) {
       emit(AuthFailure('Registrasi gagal. Silakan coba lagi.'));

@@ -1,8 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permission internet — wajib untuk koneksi ke backend API -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="E-Commerce"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:usesCleartextTraffic="true">
+        <!-- usesCleartextTraffic="true" diperlukan untuk HTTP (bukan HTTPS) ke backend lokal -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

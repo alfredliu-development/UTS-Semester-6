@@ -1,145 +1,106 @@
-import '../database/app_database.dart';
+import '../api/api_service.dart';
 import '../models/order_item_model.dart';
 import '../models/order_model.dart';
 
 class OrderRepository {
-  final AppDatabase _db = AppDatabase.instance;
+  final ApiService _api = ApiService.instance;
 
   Future<List<OrderModel>> getAll() async {
-    final db = await _db.database;
-    final result = await db.query('orders', orderBy: 'created_at DESC');
-    return result.map((e) => OrderModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get('/orders');
+      final List data = response.data as List;
+      return data
+          .map((e) => OrderModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<List<OrderModel>> getTodayOrders() async {
-    final db = await _db.database;
-    final today = DateTime.now();
-    final startOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-    ).toIso8601String();
-    final endOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-      23,
-      59,
-      59,
-    ).toIso8601String();
-
-    final result = await db.query(
-      'orders',
-      where: 'created_at >= ? AND created_at <= ?',
-      whereArgs: [startOfDay, endOfDay],
-      orderBy: 'created_at DESC',
-    );
-    return result.map((e) => OrderModel.fromMap(e)).toList();
-  }
-
-  Future<OrderModel?> getById(int id) async {
-    final db = await _db.database;
-    final result = await db.query('orders', where: 'id = ?', whereArgs: [id]);
-
-    if (result.isEmpty) return null;
-    return OrderModel.fromMap(result.first);
+    try {
+      final response = await _api.get('/orders/today');
+      final List data = response.data as List;
+      return data
+          .map((e) => OrderModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<List<OrderModel>> getByCustomerId(int customerId) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'orders',
-      where: 'customer_id = ?',
-      whereArgs: [customerId],
-      orderBy: 'created_at DESC',
-    );
-    return result.map((e) => OrderModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get(
+        '/orders',
+        queryParameters: {'customer_id': customerId},
+      );
+      final List data = response.data as List;
+      return data
+          .map((e) => OrderModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
+  Future<OrderModel?> getById(int id) async {
+    try {
+      final response = await _api.get('/orders/$id');
+      if (response.data == null) return null;
+      return OrderModel.fromMap(response.data as Map<String, dynamic>);
+    } on ApiException {
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Insert order baru. Mengembalikan ID order yang baru dibuat.
+  /// Melempar [ApiException] jika gagal.
   Future<int> insert(OrderModel order, List<OrderItemModel> items) async {
-    final db = await _db.database;
-
-    return await db.transaction((txn) async {
-      final orderId = await txn.insert('orders', order.toMap()..remove('id'));
-
-      for (final item in items) {
-        await txn.insert('order_items', {
-          ...item.toMap()..remove('id'),
-          'order_id': orderId,
-        });
-      }
-
-      return orderId;
-    });
+    final response = await _api.post(
+      '/orders',
+      data: {
+        'order': order.toMap()..remove('id'),
+        'items': items.map((e) => e.toMap()..remove('id')).toList(),
+      },
+    );
+    return (response.data['id'] as int?) ?? 0;
   }
 
-  Future<int> updateStatus(int id, OrderStatus status) async {
-    final db = await _db.database;
-    return await db.update(
-      'orders',
-      {'status': status.value},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+  /// Update status order. Melempar [ApiException] jika gagal.
+  Future<void> updateStatus(int id, OrderStatus status) async {
+    await _api.put('/orders/$id/status', data: {'status': status.value});
   }
 
   Future<List<OrderItemModel>> getItemsByOrderId(int orderId) async {
-    final db = await _db.database;
-    final result = await db.query(
-      'order_items',
-      where: 'order_id = ?',
-      whereArgs: [orderId],
-    );
-    return result.map((e) => OrderItemModel.fromMap(e)).toList();
+    try {
+      final response = await _api.get('/orders/$orderId/items');
+      final List data = response.data as List;
+      return data
+          .map((e) => OrderItemModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on ApiException {
+      return [];
+    }
   }
 
   Future<double> getTodayTotalAmount() async {
-    final db = await _db.database;
-    final today = DateTime.now();
-    final startOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-    ).toIso8601String();
-    final endOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-      23,
-      59,
-      59,
-    ).toIso8601String();
-
-    final result = await db.rawQuery(
-      'SELECT SUM(total_amount) as total FROM orders WHERE created_at >= ? AND created_at <= ?',
-      [startOfDay, endOfDay],
-    );
-
-    return (result.first['total'] as num?)?.toDouble() ?? 0.0;
+    try {
+      final response = await _api.get('/orders/stats/today-total');
+      return (response.data['total'] as num?)?.toDouble() ?? 0.0;
+    } on ApiException {
+      return 0.0;
+    }
   }
 
   Future<int> getTodayOrderCount() async {
-    final db = await _db.database;
-    final today = DateTime.now();
-    final startOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-    ).toIso8601String();
-    final endOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-      23,
-      59,
-      59,
-    ).toIso8601String();
-
-    final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM orders WHERE created_at >= ? AND created_at <= ?',
-      [startOfDay, endOfDay],
-    );
-
-    return result.first['count'] as int? ?? 0;
+    try {
+      final response = await _api.get('/orders/stats/today-count');
+      return (response.data['count'] as int?) ?? 0;
+    } on ApiException {
+      return 0;
+    }
   }
 }

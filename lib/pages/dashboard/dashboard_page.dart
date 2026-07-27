@@ -171,6 +171,8 @@ class _HomeTabState extends State<_HomeTab> {
                 delegate: SliverChildListDelegate([
                   _buildDateInfo(),
                   const SizedBox(height: 20),
+                  _buildBanner(),
+                  const SizedBox(height: 24),
                   _buildSummaryCards(),
                   const SizedBox(height: 28),
                   const Text('Menu Utama', style: AppTextStyles.heading3),
@@ -182,6 +184,95 @@ class _HomeTabState extends State<_HomeTab> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return Container(
+      height: 160,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [AppColors.primary, AppColors.accent],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Background Pattern (Optional)
+          Positioned(
+            right: -20,
+            top: -20,
+            child: CircleAvatar(
+              radius: 60,
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'PROMO TERBARU',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Tingkatkan Penjualan\nHari Ini!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Cek daftar produk unggulan sekarang',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 10,
+            bottom: -10,
+            child: Opacity(
+              opacity: 0.2,
+              child: Icon(
+                Icons.trending_up_rounded,
+                size: 120,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
