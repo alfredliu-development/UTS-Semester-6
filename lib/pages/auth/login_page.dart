@@ -296,9 +296,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleAuthState(BuildContext context, AuthState state) {
-    if (state is AuthSuccess) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else if (state is AuthFailure) {
+    // AuthSuccess ditangani oleh _SplashRouter di main.dart
+    // (reactive rebuild otomatis ke DashboardPage)
+    if (state is AuthFailure) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.message),

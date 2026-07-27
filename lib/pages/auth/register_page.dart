@@ -406,7 +406,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  Navigator.pushReplacementNamed(context, '/dashboard');
+                  // _SplashRouter di main.dart otomatis navigasi ke DashboardPage
+                  // saat AuthRegisterSuccess terdeteksi
                 },
                 icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                 label: const Text('Lanjut ke Dashboard'),
