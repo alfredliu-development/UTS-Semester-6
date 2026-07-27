@@ -25,11 +25,11 @@ class SalesModel {
 
   factory SalesModel.fromMap(Map<String, dynamic> map) {
     return SalesModel(
-      id: map['id'] as int?,
-      username: map['username'] as String? ?? '',
-      email: map['email'] as String? ?? '',
-      fullName: map['full_name'] as String? ?? '',
-      role: map['role'] as String? ?? 'sales',
+      id: (map['id'] as num?)?.toInt(),
+      username: map['username']?.toString() ?? '',
+      email: map['email']?.toString() ?? '',
+      fullName: map['full_name']?.toString() ?? '',
+      role: map['role']?.toString() ?? 'sales',
     );
   }
 
